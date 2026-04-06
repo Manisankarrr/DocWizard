@@ -1,0 +1,53 @@
+name: Update Documentation
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  update-docs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+          pip install requests
+
+      - name: Generate and update API reference
+        env:
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DOCWIZARD_API_URL: ${{ secrets.DOCWIZARD_API_URL }}
+        run: |
+          python .github/workflows/generate_docs_action.py
+
+      - name: Commit and push changes
+        if: success()
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Actions Bot"
+          git add docs/API_REFERENCE.md
+          git commit -m "docs: update API reference [skip ci]" || echo "No changes to commit"
+          git push
+
+      - name: Report rate limit issue
+        if: failure()
+        uses: actions/github-script@v6
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: '⚠️ **DocWizard Rate Limit**: OpenRouter API rate limit is near threshold. Documentation generation skipped. Please try again tomorrow.'
+            })

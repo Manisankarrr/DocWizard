@@ -1,0 +1,58 @@
+# Environment
+.env
+.env.local
+.env.production
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+dist/
+build/
+*.egg
+
+# Virtual environment
+venv/
+env/
+.venv/
+
+# FAISS indexes (local data, don't commit)
+faiss_indexes/
+
+# Node / Frontend
+node_modules/
+frontend/dist/
+frontend/build/
+.npm
+
+# Vite
+*.local
+
+# VS Code
+.vscode/
+*.code-workspace
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Logs
+*.log
+logs/
+npm-debug.log*
+
+# Testing
+.pytest_cache/
+htmlcov/
+.coverage
+
+# Jupyter (if you ever experiment)
+.ipynb_checkpoints/
+
+# Sentence transformers cache (large model files)
+.cache/
+models/
